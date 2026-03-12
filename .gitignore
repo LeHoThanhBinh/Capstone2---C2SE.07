@@ -58,3 +58,4 @@ backend/storage/embeddings/*
 
 # Database
 database/migrations/*.sql
+infrastructure/gcp/service_account.json
