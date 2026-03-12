@@ -1,0 +1,102 @@
+<div class="container">
+  <div class="left-panel">
+    <img src="/assets/anh/sssss.jpg" alt="EduTutor AI Illustration" />
+  </div>
+
+  <div class="right-panel">
+    <div class="login-card">
+      <div class="logo-icon">
+        <i class="fa-solid fa-check"></i>
+      </div>
+
+      <h2 class="title">Chào mừng trở lại!</h2>
+      <p class="subtitle">Đăng nhập vào tài khoản của bạn</p>
+
+      <div class="social-login">
+        <span>Hoặc đăng nhập bằng:</span>
+        <button class="social-btn" (click)="loginWithGoogle()" type="button">
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg"
+            alt="Google"
+          />
+        </button>
+      </div>
+
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        <div class="input-container">
+          <div
+            class="input-group"
+            [ngClass]="{
+              'input-error': loginForm.get('email')?.invalid && loginForm.get('email')?.touched,
+            }"
+          >
+            <i class="fa-solid fa-envelope icon-left"></i>
+            <input type="email" formControlName="email" placeholder="Nhập email của bạn" />
+          </div>
+          <div
+            class="error-message"
+            *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
+          >
+            <small *ngIf="loginForm.get('email')?.errors?.['required']">Vui lòng nhập email.</small>
+            <small *ngIf="loginForm.get('email')?.errors?.['email']"
+              >Email không đúng định dạng.</small
+            >
+          </div>
+        </div>
+
+        <div class="input-container">
+          <div
+            class="input-group"
+            [ngClass]="{
+              'input-error':
+                loginForm.get('password')?.invalid && loginForm.get('password')?.touched,
+            }"
+          >
+            <i class="fa-solid fa-lock icon-left"></i>
+            <input
+              [type]="isPasswordVisible ? 'text' : 'password'"
+              formControlName="password"
+              placeholder="Mật khẩu"
+            />
+            <i
+              class="fa-solid icon-right"
+              [ngClass]="{
+                'fa-eye-slash': !isPasswordVisible,
+                'fa-eye': isPasswordVisible,
+              }"
+              (click)="togglePasswordVisibility()"
+            ></i>
+          </div>
+          <div
+            class="error-message"
+            *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
+          >
+            <small *ngIf="loginForm.get('password')?.errors?.['required']"
+              >Vui lòng nhập mật khẩu.</small
+            >
+            <small *ngIf="loginForm.get('password')?.errors?.['minlength']"
+              >Mật khẩu phải có ít nhất 6 ký tự.</small
+            >
+          </div>
+        </div>
+
+        <div class="forgot-password">
+          <a href="#">Quên mật khẩu?</a>
+        </div>
+
+        <div class="error-message server-error" *ngIf="errorMessage" style="text-align: center; margin-bottom: 15px; font-weight: 600;">
+          {{ errorMessage }}
+        </div>
+
+        <button type="submit" class="btn-primary" [disabled]="loginForm.invalid || isLoading">
+          <span *ngIf="!isLoading">Đăng nhập</span>
+          <span *ngIf="isLoading"><i class="fa-solid fa-spinner fa-spin"></i> Đang xử lý...</span>
+        </button>
+      </form>
+
+      <div class="signup-link">Chưa có tài khoản? <a routerLink="/register">Đăng ký ngay</a></div>
+
+      <div class="card-bottom-line"></div>
+    </div>
+  </div>
+</div>
