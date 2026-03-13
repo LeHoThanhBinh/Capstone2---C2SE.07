@@ -1,26 +1,24 @@
 version: '3.8'
 
 services:
-  # PostgreSQL Database
   db:
     image: postgres:15
     container_name: edututor_db
     environment:
-      POSTGRES_DB: ${DB_NAME}
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME:-edututor_db}
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-password}
     ports:
-      - "5432:5432"
+      - "5433:5432" # Né port 5432 trên máy bạn
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER}"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres}"]
       interval: 10s
       timeout: 5s
       retries: 5
 
-  # Redis Cache (Optional)
   redis:
     image: redis:7-alpine
     container_name: edututor_redis
@@ -29,27 +27,24 @@ services:
     volumes:
       - redis_data:/data
 
-  # Django Backend
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
     container_name: edututor_backend
+    # Đổi lệnh chạy sang runserver để nó tự load CSS
     command: >
       sh -c "python manage.py migrate &&
-             python manage.py collectstatic --noinput &&
-             gunicorn config.wsgi:application --bind 0.0.0.0:8000"
+             python manage.py runserver 0.0.0.0:8000"
     environment:
-      DEBUG: ${DEBUG}
-      SECRET_KEY: ${SECRET_KEY}
-      DB_ENGINE: ${DB_ENGINE}
-      DB_NAME: ${DB_NAME}
-      DB_USER: ${DB_USER}
-      DB_PASSWORD: ${DB_PASSWORD}
+      DEBUG: "True"
+      SECRET_KEY: "django-insecure-key-tam-thoi"
+      DB_ENGINE: "django.db.backends.postgresql"
+      DB_NAME: ${DB_NAME:-edututor_db}
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-password}
       DB_HOST: db
-      DB_PORT: ${DB_PORT}
-      GCP_PROJECT_ID: ${GCP_PROJECT_ID}
-      VERTEX_API_KEY: ${VERTEX_API_KEY}
+      DB_PORT: "5432"
     ports:
       - "8000:8000"
     volumes:
@@ -59,47 +54,22 @@ services:
     depends_on:
       db:
         condition: service_healthy
-      redis:
-        condition: service_started
 
-  # React Frontend
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
     container_name: edututor_frontend
-    environment:
-      REACT_APP_API_URL: ${REACT_APP_API_URL}
-      REACT_APP_ENV: ${REACT_APP_ENV}
     ports:
-      - "3000:3000"
+      - "4200:4200" # Cổng Angular
     volumes:
       - ./frontend:/app
       - /app/node_modules
     depends_on:
       - backend
 
-  # Nginx Reverse Proxy
-  nginx:
-    image: nginx:alpine
-    container_name: edututor_nginx
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./infrastructure/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - static_volume:/app/staticfiles:ro
-      - media_volume:/app/media:ro
-    depends_on:
-      - backend
-      - frontend
-
 volumes:
   postgres_data:
   redis_data:
   static_volume:
   media_volume:
-
-networks:
-  default:
-    name: edututor_network
