@@ -47,8 +47,8 @@ export class LoginComponent implements OnInit {
         next: (response) => {
           console.log('Đăng nhập thành công từ Server:', response);
           this.isLoading = false;
-          alert('Đăng nhập thành công!'); 
-          // (Sau này chúng ta sẽ viết code lưu Token và chuyển hướng trang ở đây)
+          // Chuyển hướng sang trang dashboard
+          this.router.navigate(['/dashboard']);
         },
         error: (error) => {
           console.error('Lỗi từ Server:', error);

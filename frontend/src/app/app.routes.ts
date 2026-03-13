@@ -1,8 +1,9 @@
 import { Routes } from '@angular/router';
 import { LoginComponent } from './login/login.component';
-import { DashboardComponent } from './dashboard/dashboard.component'; 
+import { Dashboard } from './dashboard/dashboard';
+ 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
-  { path: 'dashboard', component: DashboardComponent }, // Thêm dòng này
+  { path: 'dashboard', component: Dashboard },
   { path: '', redirectTo: '/login', pathMatch: 'full' }  // Mặc định vào login
 ];
