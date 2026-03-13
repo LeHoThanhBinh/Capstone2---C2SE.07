@@ -1,0 +1,17 @@
+# Sử dụng Python cho Backend
+FROM python:3.12-slim
+
+WORKDIR /app
+
+# Cài đặt môi trường để chạy Postgres
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends gcc libpq-dev \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy và cài đặt thư viện Python
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy toàn bộ code Django
+COPY . .
