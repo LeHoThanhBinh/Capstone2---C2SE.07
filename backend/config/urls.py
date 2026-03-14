@@ -45,9 +45,10 @@ def login_api(request):
             return JsonResponse({"error": str(e)}, status=400)
     return JsonResponse({"message": "Chỉ nhận POST"}, status=405)
 
+from django.urls import path, include
+
 # 3. DANH SÁCH ĐƯỜNG DẪN
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/auth/register', register_api), 
-    path('api/auth/login', login_api), # Đã mở thêm cửa cho Login
+    path('api/auth/', include('apps.users.urls')),
 ]

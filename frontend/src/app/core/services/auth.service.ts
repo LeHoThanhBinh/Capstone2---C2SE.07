@@ -29,6 +29,37 @@ export class AuthService {
     return null;
   }
 
+  // Lấy User Role từ JWT Token
+  getRole(): string | null {
+    const token = this.getToken();
+    if (!token) return null;
+    try {
+      // Decode phần payload của JWT (nằm ở giữa 2 dấu chấm)
+      const payload = token.split('.')[1];
+      const decodedJson = atob(payload);
+      const decoded = JSON.parse(decodedJson);
+      // Django rest_framework_simplejwt không chứa role ngay lập tức trừ khi custom claim
+      // Chờ đã: Token cần có Role, nếu không thì mình phải lấy role từ Local Storage.
+      // Vì backend trả về: "user": { "role": "..." }, nên ta lưu luôn info vào localStorage thay vì chỉ token.
+      return localStorage.getItem('user_role');
+    } catch (e) {
+      return null;
+    }
+  }
+
+  // Hàm kiểm tra quyền Admin
+  isAdmin(): boolean {
+    return this.getRole() === 'ADMIN';
+  }
+
+  // Cập nhật hàm login để lấy thông tin role từ backend
+  saveUserData(token: string, role: string): void {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('auth_token', token);
+      localStorage.setItem('user_role', role);
+    }
+  }
+
   // Hàm kiểm tra xem đã đăng nhập chưa (có token không)
   isLoggedIn(): boolean {
     return this.getToken() !== null;

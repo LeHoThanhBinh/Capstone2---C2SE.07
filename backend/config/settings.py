@@ -21,6 +21,7 @@ INSTALLED_APPS = [
 
     # Thư viện bên thứ 3
     'rest_framework',
+    'rest_framework_simplejwt',
     'corsheaders',
 
     # Các ứng dụng (App) của nhóm Tuấn
@@ -106,3 +107,24 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:4200",
 ]
 CORS_ALLOW_CREDENTIALS = True
+
+# Custom User Model
+AUTH_USER_MODEL = 'users.CustomUser'
+
+# ==========================================
+# CẤU HÌNH DRF VÀ JWT
+# ==========================================
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
+}
+
+from datetime import timedelta
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'ROTATE_REFRESH_TOKENS': False,
+    'BLACKLIST_AFTER_ROTATION': True,
+    'AUTH_HEADER_TYPES': ('Bearer',),
+}

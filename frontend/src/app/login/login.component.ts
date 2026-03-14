@@ -47,8 +47,18 @@ export class LoginComponent implements OnInit {
         next: (response) => {
           console.log('Đăng nhập thành công từ Server:', response);
           this.isLoading = false;
-          // Chuyển hướng sang trang dashboard
-          this.router.navigate(['/dashboard']);
+          
+          // Lưu token và role vào localStorage
+          if (response.access_token && response.user && response.user.role) {
+            this.authService.saveUserData(response.access_token, response.user.role);
+          }
+          
+          // Chuyển hướng theo role
+          if (this.authService.isAdmin()) {
+            this.router.navigate(['/admin/dashboard']);
+          } else {
+            this.router.navigate(['/dashboard']);
+          }
         },
         error: (error) => {
           console.error('Lỗi từ Server:', error);
