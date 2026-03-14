@@ -7,7 +7,7 @@ import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-login',
-  standalone: true, 
+  standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
@@ -15,10 +15,8 @@ import { RouterLink } from '@angular/router';
 export class LoginComponent implements OnInit {
   loginForm!: FormGroup;
   isPasswordVisible: boolean = false;
-  
-  // Thêm 2 biến để quản lý trạng thái UI
-  isLoading: boolean = false; 
-  errorMessage: string = ''; 
+  isLoading: boolean = false;
+  errorMessage: string = '';
 
   constructor(
     private fb: FormBuilder,
@@ -40,21 +38,28 @@ export class LoginComponent implements OnInit {
   onSubmit(): void {
     if (this.loginForm.valid) {
       this.isLoading = true;
-      this.errorMessage = ''; // Xóa thông báo lỗi cũ nếu có
+      this.errorMessage = '';
 
-      // Gọi hàm login từ Service
       this.authService.login(this.loginForm.value).subscribe({
         next: (response) => {
-          console.log('Đăng nhập thành công từ Server:', response);
+          console.log('Đăng nhập thành công:', response);
           this.isLoading = false;
-          // Chuyển hướng sang trang dashboard
-          this.router.navigate(['/dashboard']);
+
+          // Lưu token và role
+          this.authService.saveToken(response.access_token);
+          this.authService.saveRole(response.role);
+
+          // Phân quyền redirect
+          if (response.role === 'admin') {
+            this.router.navigate(['/admin/dashboard']);
+          } else {
+            this.router.navigate(['/dashboard']);
+          }
         },
         error: (error) => {
           console.error('Lỗi từ Server:', error);
           this.isLoading = false;
-          // Lấy câu thông báo lỗi từ Backend trả về, hoặc dùng câu mặc định
-          this.errorMessage = error.error?.message || 'Tài khoản hoặc mật khẩu không chính xác. Vui lòng thử lại!';
+          this.errorMessage = error.error?.error || 'Tài khoản hoặc mật khẩu không chính xác. Vui lòng thử lại!';
         }
       });
     } else {

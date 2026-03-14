@@ -8,20 +8,18 @@ import { Observable } from 'rxjs';
 export class AuthService {
   private apiUrl = 'http://localhost:8000/api/auth/login';
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
   login(credentials: any): Observable<any> {
     return this.http.post(this.apiUrl, credentials);
   }
 
-  // Thêm hàm lưu token vào localStorage
   saveToken(token: string): void {
-    if (typeof window !== 'undefined') { // Kiểm tra để tránh lỗi SSR
+    if (typeof window !== 'undefined') {
       localStorage.setItem('auth_token', token);
     }
   }
 
-  // Thêm hàm lấy token ra
   getToken(): string | null {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('auth_token');
@@ -29,12 +27,34 @@ export class AuthService {
     return null;
   }
 
-  // Hàm kiểm tra xem đã đăng nhập chưa (có token không)
+  saveRole(role: string): void {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('user_role', role);
+    }
+  }
+
+  getRole(): string | null {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('user_role');
+    }
+    return null;
+  }
+
+  isAdmin(): boolean {
+    return this.getRole() === 'admin';
+  }
+
   isLoggedIn(): boolean {
     return this.getToken() !== null;
   }
 
-  // Hàm gọi API đăng ký
+  logout(): void {
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('user_role');
+    }
+  }
+
   register(userData: any): Observable<any> {
     return this.http.post('http://localhost:8000/api/auth/register', userData);
   }
