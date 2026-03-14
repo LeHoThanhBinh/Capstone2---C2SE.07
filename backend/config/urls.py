@@ -4,7 +4,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
 
-# 1. API ĐĂNG KÝ (Giữ nguyên như cũ)
+# 1. API ĐĂNG KÝ 
 @csrf_exempt
 def register_api(request):
     if request.method == 'POST':
