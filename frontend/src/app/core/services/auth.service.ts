@@ -48,7 +48,8 @@ export class AuthService {
   }
 
   isAdmin(): boolean {
-    return this.getRole() === 'admin';
+    const role = this.getRole();
+    return role ? role.toUpperCase() === 'ADMIN' : false;
   }
 
   isLoggedIn(): boolean {
