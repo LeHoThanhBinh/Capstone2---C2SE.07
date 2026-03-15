@@ -4,8 +4,11 @@ import { Dashboard } from './dashboard/dashboard';
 import { authGuard } from './core/guards/auth.guard';
 import { adminGuard } from './core/guards/admin.guard';
 
+import { RegisterComponent } from './register/register.component';
+
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
+  { path: 'register', component: RegisterComponent },
   { path: 'dashboard', loadComponent: () => import('./dashboard/dashboard').then(m => m.Dashboard), canActivate: [authGuard] },
   {
     path: 'admin',
