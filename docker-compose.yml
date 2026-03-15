@@ -2,19 +2,19 @@ version: "3.8"
 
 services:
   db:
-    image: postgres:15
+    image: mysql:8.0
     container_name: edututor_db
     environment:
-      POSTGRES_DB: ${DB_NAME:-edututor_db}
-      POSTGRES_USER: ${DB_USER:-postgres}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-password}
+      MYSQL_DATABASE: ${DB_NAME:-edututor_db}
+      MYSQL_USER: ${DB_USER:-user}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-password}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root_password}
     ports:
-      - "5433:5432" # Né port 5432 trên máy bạn
+      - "${DB_EXTERNAL_PORT:-3307}:3306"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - mysql_data:/var/lib/mysql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres}"]
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -39,12 +39,12 @@ services:
     environment:
       DEBUG: "True"
       SECRET_KEY: "django-insecure-key-tam-thoi"
-      DB_ENGINE: "django.db.backends.postgresql"
+      DB_ENGINE: "django.db.backends.mysql"
       DB_NAME: ${DB_NAME:-edututor_db}
-      DB_USER: ${DB_USER:-postgres}
+      DB_USER: ${DB_USER:-user}
       DB_PASSWORD: ${DB_PASSWORD:-password}
       DB_HOST: db
-      DB_PORT: "5432"
+      DB_PORT: "3306"
     ports:
       - "8000:8000"
     volumes:
@@ -71,7 +71,7 @@ services:
       - backend
 
 volumes:
-  postgres_data:
+  mysql_data:
   redis_data:
   static_volume:
   media_volume:

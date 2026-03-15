@@ -65,15 +65,18 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-# CẤU HÌNH KẾT NỐI DATABASE POSTGRES TỪ DOCKER
+# CẤU HÌNH KẾT NỐI DATABASE MYSQL TỪ DOCKER
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
+        'ENGINE': 'django.db.backends.mysql',
         'NAME': os.environ.get('DB_NAME', 'edututor_db'),
-        'USER': os.environ.get('DB_USER', 'postgres'),
+        'USER': os.environ.get('DB_USER', 'user'),
         'PASSWORD': os.environ.get('DB_PASSWORD', 'password'),
         'HOST': os.environ.get('DB_HOST', 'db'),
-        'PORT': os.environ.get('DB_PORT', '5432'),
+        'PORT': os.environ.get('DB_PORT', '3306'),
+        'OPTIONS': {
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+        },
     }
 }
 
