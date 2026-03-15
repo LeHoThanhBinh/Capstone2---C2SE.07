@@ -1,0 +1,187 @@
+<div class="page-wrapper">
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+          <rect width="28" height="28" rx="8" fill="#1565C0"/>
+          <path d="M7 14L11 18L21 8" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="brand-name">EduTutor <strong>AI</strong></span>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section-label">TỔNG QUAN</div>
+        <a class="nav-item" routerLink="/admin/dashboard">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+            <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+          </svg>
+          <span>Dashboard</span>
+        </a>
+        <div class="nav-section-label">PHÂN TÍCH</div>
+        <a class="nav-item" routerLink="/admin/analytics">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
+          </svg>
+          <span>Thống Kê</span>
+        </a>
+        <div class="nav-section-label">QUẢN LÝ</div>
+        <a class="nav-item active" routerLink="/admin/user-management">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+          <span>Người Dùng</span>
+        </a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="admin-avatar">A</div>
+        <div class="admin-info">
+          <span class="admin-name">Admin</span>
+          <span class="admin-role">Quản trị viên</span>
+        </div>
+      </div>
+    </aside>
+  
+    <!-- Main -->
+    <main class="main-content">
+      <header class="topbar">
+        <div>
+          <h1 class="page-title">Quản Lý Người Dùng</h1>
+          <span class="page-subtitle">Danh sách tất cả người dùng trong hệ thống</span>
+        </div>
+        <button class="btn-add" (click)="openAdd()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+          Thêm người dùng
+        </button>
+      </header>
+  
+      <!-- Search -->
+      <div class="toolbar">
+        <div class="search-box">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <input type="text" placeholder="Tìm kiếm theo tên hoặc email..."
+                 [(ngModel)]="searchQuery" (input)="applyFilter()" />
+        </div>
+        <span class="total-count"><strong>{{ filteredUsers.length }}</strong> người dùng</span>
+      </div>
+  
+      <!-- Table -->
+      <div class="panel">
+        <table class="user-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Họ và Tên</th>
+              <th>Email</th>
+              <th>Mật Khẩu</th>
+              <th>Thao Tác</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let user of filteredUsers; let i = index">
+              <td class="idx-cell">{{ i + 1 }}</td>
+              <td class="user-cell">
+                <div class="user-avatar" [style.background]="user.avatarColor">
+                  {{ user.name.charAt(0).toUpperCase() }}
+                </div>
+                {{ user.name }}
+              </td>
+              <td class="email-cell">{{ user.email }}</td>
+              <td class="pass-cell">••••••••</td>
+              <td class="action-cell">
+                <button class="btn-edit" (click)="openEdit(user)">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                  </svg>
+                  Sửa
+                </button>
+                <button class="btn-delete" (click)="confirmDelete(user)">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="3 6 5 6 21 6"/>
+                    <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                    <path d="M10 11v6"/><path d="M14 11v6"/>
+                  </svg>
+                  Xóa
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+  
+        <div class="empty-state" *ngIf="filteredUsers.length === 0">
+          <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="1.5">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+          </svg>
+          <p>Không tìm thấy người dùng nào</p>
+        </div>
+      </div>
+    </main>
+  </div>
+  
+  <!-- Modal Thêm / Sửa -->
+  <div class="overlay" *ngIf="showModal" (click)="closeModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>{{ isEditing ? 'Sửa Người Dùng' : 'Thêm Người Dùng' }}</h3>
+        <button class="btn-close" (click)="closeModal()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Họ và tên</label>
+          <input type="text" [(ngModel)]="form.name" placeholder="Nhập họ và tên" />
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" [(ngModel)]="form.email" placeholder="Nhập email" />
+        </div>
+        <div class="form-group">
+          <label>Mật khẩu <span *ngIf="isEditing" class="label-hint">(để trống nếu không đổi)</span></label>
+          <input type="password" [(ngModel)]="form.password" placeholder="Nhập mật khẩu" />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" (click)="closeModal()">Hủy</button>
+        <button class="btn-save" (click)="saveUser()">
+          {{ isEditing ? 'Lưu thay đổi' : 'Thêm' }}
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal Xác nhận xóa -->
+  <div class="overlay" *ngIf="showDeleteModal" (click)="showDeleteModal = false">
+    <div class="modal modal-sm" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Xác Nhận Xóa</h3>
+        <button class="btn-close" (click)="showDeleteModal = false">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="delete-confirm">
+          <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="1.5">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="8" x2="12" y2="12"/>
+            <line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          <p>Bạn có chắc muốn xóa<br><strong>{{ selectedUser?.name }}</strong>?</p>
+          <span>Hành động này không thể hoàn tác.</span>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" (click)="showDeleteModal = false">Hủy</button>
+        <button class="btn-delete-confirm" (click)="deleteUser()">Xóa</button>
+      </div>
+    </div>
+  </div>
